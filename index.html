@@ -4,27 +4,52 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Workouts avec Séries Multiples</title>
+    <title>Workout Tracker</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <h1>Workouts avec Séries Multiples</h1>
 
-    <label for="session">Choisir une séance :</label>
-    <select id="session"></select>
+    <header>
+        <nav>
+            <button id="menu-workout" class="menu-btn active">Workout</button>
+            <button id="menu-history" class="menu-btn">Historique</button>
+        </nav>
+    </header>
 
-    <form id="session-form">
-        <div id="exercises-container"></div>
-        <button type="button" id="submit-btn">Enregistrer la séance</button>
-    </form>
+    <main>
+        <!-- Page Workout -->
+        <section id="page-workout">
+            <h1>Workout Tracker</h1>
+            <form id="select-session-form">
+                <label for="session-select">Choisir un workout :</label><br />
+                <select id="session-select">
+                    <option value="">-- Sélectionner --</option>
+                    <option value="fullbody">Full Body</option>
+                    <option value="upperbody">Upper Body</option>
+                    <option value="lowerbody">Lower Body</option>
+                </select><br />
+                <button id="start-stop-btn" type="button" disabled>Démarrer la séance</button>
+            </form>
 
-    <h2>Historique des séances</h2>
-    <div id="history"></div>
+            <div id="timer" style="display:none;">00:00:00</div>
 
-    <button id="download-btn">Télécharger toutes les séances</button>
-    <button id="clear-storage-btn" style="background-color: #dc3545; margin-top: 10px;">Supprimer les données</button>
+            <div id="session-form" style="display:none;">
+                <div id="exercises-container"></div>
 
+                <div id="manual-add-exercise" style="display:none;">
+                    <input type="text" id="manual-exercise-name" placeholder="Nom exercice manuel" />
+                    <button type="button" id="add-manual-exercise-btn">Ajouter exercice</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page Historique -->
+        <section id="page-history" style="display:none;">
+            <h1>Historique des séances</h1>
+            <div id="history-list">Chargement...</div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
