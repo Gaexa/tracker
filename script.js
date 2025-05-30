@@ -27,13 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const allData = JSON.parse(localStorage.getItem('savedWorkouts') || '[]');
         historyDiv.innerHTML = '';
 
-        allData.forEach(entry => {
+        allData.forEach((entry, index) => {
             const date = new Date(entry.date);
             const dateStr = date.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
 
             const sessionTitle = document.createElement('h3');
             sessionTitle.textContent = `Séance : ${entry.session} - Date : ${dateStr}`;
-            historyDiv.appendChild(sessionTitle);
+
+            // Création bouton supprimer individuel
+            const btnDelete = document.createElement('button');
+            btnDelete.innerHTML = '🗑️'; // icône poubelle emoji, tu peux remplacer par SVG si tu préfères
+            btnDelete.classList.add('history-delete-btn');
+            btnDelete.title = "Supprimer cette séance";
+
+            btnDelete.addEventListener('click', () => {
+                if (confirm("Supprimer cette séance ? Cette action est irréversible.")) {
+                    allData.splice(index, 1);
+                    localStorage.setItem('savedWorkouts', JSON.stringify(allData));
+                    displayHistory();
+                }
+            });
+
+            // Conteneur titre + bouton
+            const headerDiv = document.createElement('div');
+            headerDiv.style.display = 'flex';
+            headerDiv.style.alignItems = 'center';
+            headerDiv.appendChild(sessionTitle);
+            headerDiv.appendChild(btnDelete);
+            historyDiv.appendChild(headerDiv);
 
             const exercises = predefinedSessions[entry.session] || [];
 
