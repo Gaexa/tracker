@@ -8,8 +8,8 @@
   <h1>Enregistre ton workout</h1>
   <form id="workoutForm">
     <input type="text" id="exercise" placeholder="Exercice" required />
-    <input type="number" id="weight" placeholder="Poids (kg)" required />
-    <input type="number" id="reps" placeholder="Répétitions" required />
+    <input type="number" step="0.1" id="weight" placeholder="Poids (kg)" required />
+    <input type="number" step="1" min="1" id="reps" placeholder="Répétitions" required />
     <button type="submit">Ajouter</button>
   </form>
 
@@ -37,9 +37,22 @@
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-      const exercise = document.getElementById('exercise').value;
-      const weight = document.getElementById('weight').value;
-      const reps = document.getElementById('reps').value;
+      const exercise = document.getElementById('exercise').value.trim();
+      const weight = parseFloat(document.getElementById('weight').value);
+      const reps = parseInt(document.getElementById('reps').value, 10);
+
+      if (!exercise) {
+        alert("Merci d'entrer un exercice.");
+        return;
+      }
+      if (isNaN(weight) || isNaN(reps)) {
+        alert("Merci d'entrer des nombres valides pour poids et répétitions !");
+        return;
+      }
+      if (reps < 1) {
+        alert("Les répétitions doivent être au moins 1.");
+        return;
+      }
 
       workouts.push({ exercise, weight, reps });
       localStorage.setItem('workouts', JSON.stringify(workouts));
