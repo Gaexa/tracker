@@ -9,13 +9,13 @@ h1, h2 {
   text-align: center;
 }
 
-form > div {
-  margin-bottom: 10px;
+label {
+  display: block;
+  margin: 10px 0 5px;
 }
 
-label {
-  display: inline-block;
-  width: 120px;
+form > div {
+  margin-bottom: 10px;
 }
 
 input[type="number"] {
@@ -41,4 +41,11 @@ li {
 
 .session h3 {
   margin-top: 0;
+}
+
+#sessionSelect {
+  width: 100%;
+  padding: 6px;
+  font-size: 1rem;
+  margin-bottom: 15px;
 }
