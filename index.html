@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Workouts avec Séances Pré-définies</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workouts avec Séries Multiples</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <h1>Workouts avec Séances Pré-définies</h1>
+    <h1>Workouts avec Séries Multiples</h1>
 
-  <label for="sessionSelect">Choisir une séance :</label>
-  <select id="sessionSelect"></select>
+    <label for="session">Choisir une séance :</label>
+    <select id="session"></select>
 
-  <form id="sessionForm">
-    <div id="exercisesContainer"></div>
-    <button type="submit">Enregistrer la séance</button>
-  </form>
+    <form id="session-form">
+        <div id="exercises-container"></div>
+        <button type="button" id="submit-btn">Enregistrer la séance</button>
+    </form>
 
-  <h2>Historique des séances</h2>
-  <div id="history"></div>
+    <h2>Historique des séances</h2>
+    <div id="history"></div>
 
-  <button id="downloadBtn">Télécharger toutes les séances</button>
+    <button id="download-btn">Télécharger toutes les séances</button>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>

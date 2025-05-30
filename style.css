@@ -1,51 +1,111 @@
 body {
-  font-family: Arial, sans-serif;
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
 }
 
-h1, h2 {
-  text-align: center;
+h1,
+h2 {
+    text-align: center;
 }
 
 label {
-  display: block;
-  margin: 10px 0 5px;
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
 }
 
-form > div {
-  margin-bottom: 10px;
+form>div {
+    margin-bottom: 15px;
 }
 
-input[type="number"] {
-  width: 60px;
-  margin-right: 10px;
+.exercise-block {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 6px;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+.exercise-block>label {
+    margin-bottom: 10px;
+    display: block;
+    font-size: 1.1rem;
 }
 
-li {
-  margin-bottom: 8px;
+.series-container {
+    margin-bottom: 10px;
+}
+
+.serie {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.serie input[type="number"] {
+    flex: 1 1 80px;
+    min-width: 60px;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px;
+    font-size: 1rem;
+    margin-right: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 .session {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    word-wrap: break-word;
 }
 
-.session h3 {
-  margin-top: 0;
+#session {
+    width: 100%;
+    padding: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }
 
-#sessionSelect {
-  width: 100%;
-  padding: 6px;
-  font-size: 1rem;
-  margin-bottom: 15px;
+/* Responsive / Mobile */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .serie {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .serie input[type="number"] {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        margin-right: 0;
+        margin-top: 10px;
+    }
 }
