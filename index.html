@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mes Workouts</title>
+</head>
+
+<body>
+    <h1>Enregistre ton workout</h1>
+    <form id="workoutForm">
+        <input type="text" id="exercise" placeholder="Exercice" required />
+        <input type="number" id="weight" placeholder="Poids (kg)" required />
+        <input type="number" id="reps" placeholder="Répétitions" required />
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <h2>Historique</h2>
+    <ul id="workoutList"></ul>
+
+    <script>
+        const form = document.getElementById('workoutForm');
+        const list = document.getElementById('workoutList');
+
+        // Charger les données depuis localStorage au démarrage
+        let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+
+        function displayWorkouts() {
+            list.innerHTML = '';
+            workouts.forEach((w, i) => {
+                const li = document.createElement('li');
+                li.textContent = `${w.exercise} - ${w.weight} kg x ${w.reps} reps`;
+                list.appendChild(li);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const exercise = document.getElementById('exercise').value;
+            const weight = document.getElementById('weight').value;
+            const reps = document.getElementById('reps').value;
+
+            workouts.push({ exercise, weight, reps });
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+            displayWorkouts();
+
+            form.reset();
+        });
+
+        // Affiche au chargement
+        displayWorkouts();
+    </script>
+</body>
+
+</html>
