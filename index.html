@@ -2,76 +2,25 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Mes Workouts avec Export</title>
+  <title>Workouts Pré-définis</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Enregistre ton workout</h1>
-  <form id="workoutForm">
-    <input type="text" id="exercise" placeholder="Exercice" required />
-    <input type="number" step="0.1" id="weight" placeholder="Poids (kg)" required />
-    <input type="number" step="1" min="1" id="reps" placeholder="Répétitions" required />
-    <button type="submit">Ajouter</button>
+  <h1>Workouts Pré-définis</h1>
+
+  <form id="sessionForm">
+    <h2>Nouvelle séance</h2>
+
+    <div id="exercisesContainer"></div>
+
+    <button type="submit">Enregistrer la séance</button>
   </form>
 
-  <h2>Historique</h2>
-  <ul id="workoutList"></ul>
+  <h2>Historique des séances</h2>
+  <div id="history"></div>
 
-  <button id="downloadBtn">Télécharger les données</button>
+  <button id="downloadBtn">Télécharger toutes les séances</button>
 
-  <script>
-    const form = document.getElementById('workoutForm');
-    const list = document.getElementById('workoutList');
-    const downloadBtn = document.getElementById('downloadBtn');
-
-    // Récupérer les données depuis localStorage
-    let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
-
-    function displayWorkouts() {
-      list.innerHTML = '';
-      workouts.forEach((w, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${w.exercise} - ${w.weight} kg x ${w.reps} reps`;
-        list.appendChild(li);
-      });
-    }
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const exercise = document.getElementById('exercise').value.trim();
-      const weight = parseFloat(document.getElementById('weight').value);
-      const reps = parseInt(document.getElementById('reps').value, 10);
-
-      if (!exercise) {
-        alert("Merci d'entrer un exercice.");
-        return;
-      }
-      if (isNaN(weight) || isNaN(reps)) {
-        alert("Merci d'entrer des nombres valides pour poids et répétitions !");
-        return;
-      }
-      if (reps < 1) {
-        alert("Les répétitions doivent être au moins 1.");
-        return;
-      }
-
-      workouts.push({ exercise, weight, reps });
-      localStorage.setItem('workouts', JSON.stringify(workouts));
-      displayWorkouts();
-
-      form.reset();
-    });
-
-    downloadBtn.addEventListener('click', () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workouts, null, 2));
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", "workouts.json");
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-    });
-
-    displayWorkouts();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
