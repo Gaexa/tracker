@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
         "Haut du corps": ["Développé militaire", "Rowing", "Curl biceps"],
         "Bas du corps": ["Soulevé de terre", "Fente", "Mollets debout"]
     };
+    const clearStorageBtn = document.getElementById('clear-storage-btn');
+
+    clearStorageBtn.addEventListener('click', () => {
+        if (confirm("Êtes-vous sûr de vouloir supprimer toutes les données temporaires ? Cette action est irréversible.")) {
+            if (confirm("Confirmez encore : voulez-vous vraiment tout effacer ?")) {
+                localStorage.clear();
+                alert("Toutes les données ont été supprimées.");
+                // Optionnel : actualiser la page pour réinitialiser l'affichage
+                location.reload();
+            }
+        }
+    });
 
     const sessionSelect = document.getElementById("session");
     const sessionForm = document.getElementById("session-form");
@@ -29,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const exName = exercises[exIndex] || `Exercice ${exIndex + 1}`;
                 let seriesText = seriesList
                     .filter(serie => serie.reps && serie.weight) // filtre séries vides
-                    .map(serie => `(${serie.reps} reps - ${serie.weight} kg)`)
-                    .join(', ');
+                    .map(serie => `${serie.reps}x${serie.weight} kg`)
+                    .join(' + ');
 
                 if (!seriesText) seriesText = 'Aucune série enregistrée';
 

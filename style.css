@@ -1,42 +1,52 @@
+/* Corps de la page */
 body {
     font-family: Arial, sans-serif;
     max-width: 600px;
     margin: auto;
     padding: 20px;
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
+/* Titres */
 h1,
 h2 {
     text-align: center;
+    color: #f5f5f5;
 }
 
+/* Labels */
 label {
     display: block;
     margin: 10px 0 5px;
     font-weight: bold;
+    color: #cfcfcf;
 }
 
-form>div {
-    margin-bottom: 15px;
-}
-
+/* Conteneur des exercices */
+form>div,
 .exercise-block {
     margin-bottom: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 6px;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #1e1e1e;
 }
 
+/* Label dans exercise-block */
 .exercise-block>label {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: block;
     font-size: 1.1rem;
+    color: #ddd;
 }
 
+/* Container des séries */
 .series-container {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
+/* Chaque série */
 .serie {
     display: flex;
     gap: 10px;
@@ -45,50 +55,78 @@ form>div {
     align-items: center;
 }
 
+/* Champs input des séries */
 .serie input[type="number"] {
     flex: 1 1 80px;
     min-width: 60px;
     padding: 8px;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #292929;
+    color: #eee;
 }
 
+/* Placeholder en gris clair */
+.serie input[type="number"]::placeholder {
+    color: #777;
+}
+
+/* Boutons généraux */
 button {
-    padding: 10px;
+    padding: 10px 16px;
     font-size: 1rem;
     margin-right: 10px;
     margin-top: 5px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    background-color: #007BFF;
-    color: white;
+    background-color: #007bff;
+    color: #fff;
     transition: background-color 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.5);
 }
 
 button:hover {
     background-color: #0056b3;
+    box-shadow: 0 3px 8px rgba(0, 86, 179, 0.8);
 }
 
+/* Bouton rouge pour supprimer */
+#clear-storage-btn {
+    background-color: #dc3545;
+    box-shadow: 0 2px 5px rgba(220, 53, 69, 0.6);
+}
+
+#clear-storage-btn:hover {
+    background-color: #a71d2a;
+    box-shadow: 0 3px 8px rgba(167, 29, 42, 0.8);
+}
+
+/* Conteneur d'une session dans l'historique */
 .session {
-    border: 1px solid #ccc;
-    padding: 10px;
+    border: 1px solid #333;
+    padding: 12px;
     margin-bottom: 15px;
-    border-radius: 5px;
+    border-radius: 6px;
+    background-color: #222;
     word-wrap: break-word;
+    color: #ccc;
 }
 
+/* Select session */
 #session {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     font-size: 1.1rem;
     margin-bottom: 20px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background-color: #292929;
+    color: #eee;
 }
 
-/* Responsive / Mobile */
+/* Responsive */
 @media (max-width: 480px) {
     body {
         max-width: 100% !important;
@@ -97,7 +135,7 @@ button:hover {
     }
 
     .exercise-block {
-        padding: 8px !important;
+        padding: 10px !important;
         font-size: 0.9rem;
     }
 
@@ -112,9 +150,9 @@ button:hover {
         padding: 8px !important;
     }
 
-    input[type="number"] {
+    input[type="number"],
+    #session {
         font-size: 1rem !important;
-        padding: 6px !important;
+        padding: 8px !important;
     }
-
 }
