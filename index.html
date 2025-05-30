@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Mes Workouts</title>
+  <meta charset="UTF-8" />
+  <title>Mes Workouts avec Export</title>
 </head>
-
 <body>
-    <h1>Enregistre ton workout</h1>
-    <form id="workoutForm">
-        <input type="text" id="exercise" placeholder="Exercice" required />
-        <input type="number" id="weight" placeholder="Poids (kg)" required />
-        <input type="number" id="reps" placeholder="Répétitions" required />
-        <button type="submit">Ajouter</button>
-    </form>
+  <h1>Enregistre ton workout</h1>
+  <form id="workoutForm">
+    <input type="text" id="exercise" placeholder="Exercice" required />
+    <input type="number" id="weight" placeholder="Poids (kg)" required />
+    <input type="number" id="reps" placeholder="Répétitions" required />
+    <button type="submit">Ajouter</button>
+  </form>
 
-    <h2>Historique</h2>
-    <ul id="workoutList"></ul>
+  <h2>Historique</h2>
+  <ul id="workoutList"></ul>
 
-    <script>
-        const form = document.getElementById('workoutForm');
-        const list = document.getElementById('workoutList');
+  <button id="downloadBtn">Télécharger les données</button>
 
-        // Charger les données depuis localStorage au démarrage
-        let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+  <script>
+    const form = document.getElementById('workoutForm');
+    const list = document.getElementById('workoutList');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-        function displayWorkouts() {
-            list.innerHTML = '';
-            workouts.forEach((w, i) => {
-                const li = document.createElement('li');
-                li.textContent = `${w.exercise} - ${w.weight} kg x ${w.reps} reps`;
-                list.appendChild(li);
-            });
-        }
+    // Récupérer les données depuis localStorage
+    let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const exercise = document.getElementById('exercise').value;
-            const weight = document.getElementById('weight').value;
-            const reps = document.getElementById('reps').value;
+    function displayWorkouts() {
+      list.innerHTML = '';
+      workouts.forEach((w, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${w.exercise} - ${w.weight} kg x ${w.reps} reps`;
+        list.appendChild(li);
+      });
+    }
 
-            workouts.push({ exercise, weight, reps });
-            localStorage.setItem('workouts', JSON.stringify(workouts));
-            displayWorkouts();
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const exercise = document.getElementById('exercise').value;
+      const weight = document.getElementById('weight').value;
+      const reps = document.getElementById('reps').value;
 
-            form.reset();
-        });
+      workouts.push({ exercise, weight, reps });
+      localStorage.setItem('workouts', JSON.stringify(workouts));
+      displayWorkouts();
 
-        // Affiche au chargement
-        displayWorkouts();
-    </script>
+      form.reset();
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workouts, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "workouts.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    });
+
+    displayWorkouts();
+  </script>
 </body>
-
 </html>
