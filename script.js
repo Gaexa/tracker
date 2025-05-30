@@ -25,15 +25,29 @@ function populateSessionSelect() {
   }
 }
 
-// Créer le formulaire pour les exercices sélectionnés
+// Créer le formulaire pour les exercices sélectionnés et restaurer données temporaires
 function createForm(exercises) {
   exercisesContainer.innerHTML = '';
+
+  // Charger données sauvegardées temporaires
+  const savedDataRaw = localStorage.getItem('tempWorkout_' + sessionSelect.value);
+  let savedData = [];
+  if (savedDataRaw) {
+    try {
+      savedData = JSON.parse(savedDataRaw);
+    } catch {
+      savedData = [];
+    }
+  }
+
   exercises.forEach((ex, i) => {
+    const weightVal = savedData[i]?.weight || '';
+    const repsVal = savedData[i]?.reps || '';
     const div = document.createElement('div');
     div.innerHTML = `
       <label>${ex} :</label>
-      <input type="number" step="0.1" min="0" placeholder="Poids (kg)" name="weight-${i}" />
-      <input type="number" step="1" min="0" placeholder="Répétitions" name="reps-${i}" />
+      <input type="number" step="0.1" min="0" placeholder="Poids (kg)" name="weight-${i}" value="${weightVal}" />
+      <input type="number" step="1" min="0" placeholder="Répétitions" name="reps-${i}" value="${repsVal}" />
     `;
     exercisesContainer.appendChild(div);
   });
@@ -71,7 +85,19 @@ sessionSelect.addEventListener('change', () => {
   createForm(predefinedSessions[sessionSelect.value]);
 });
 
-// Enregistrer la séance
+// Sauvegarder automatiquement la saisie dans localStorage (avant validation)
+sessionForm.addEventListener('input', () => {
+  const formData = new FormData(sessionForm);
+  const exercises = predefinedSessions[sessionSelect.value];
+  const tempData = exercises.map((ex, i) => {
+    let weightRaw = formData.get(`weight-${i}`) || '';
+    let repsRaw = formData.get(`reps-${i}`) || '';
+    return { weight: weightRaw, reps: repsRaw };
+  });
+  localStorage.setItem('tempWorkout_' + sessionSelect.value, JSON.stringify(tempData));
+});
+
+// Enregistrer la séance (validation finale)
 sessionForm.addEventListener('submit', e => {
   e.preventDefault();
   const formData = new FormData(sessionForm);
@@ -96,7 +122,11 @@ sessionForm.addEventListener('submit', e => {
   });
   localStorage.setItem('sessions', JSON.stringify(sessions));
 
+  // Effacer données temporaires
+  localStorage.removeItem('tempWorkout_' + sessionSelect.value);
+
   sessionForm.reset();
+  createForm(predefinedSessions[sessionSelect.value]); // Recharge formulaire vide
   displayHistory();
 });
 
