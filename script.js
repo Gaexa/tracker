@@ -1,176 +1,189 @@
-const predefinedSessions = {
-    "Full Body": ["Développé couché", "Squat", "Tractions"],
-    "Haut du corps": ["Développé militaire", "Rowing", "Curl biceps"],
-    "Bas du corps": ["Soulevé de terre", "Fente", "Mollets debout"]
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const predefinedSessions = {
+        "Full Body": ["Développé couché", "Squat", "Tractions"],
+        "Haut du corps": ["Développé militaire", "Rowing", "Curl biceps"],
+        "Bas du corps": ["Soulevé de terre", "Fente", "Mollets debout"]
+    };
 
-const sessionSelect = document.getElementById("session");
-const sessionForm = document.getElementById("session-form");
-const exercisesContainer = document.getElementById("exercises-container");
-const submitBtn = document.getElementById("submit-btn");
-const downloadBtn = document.getElementById("download-btn");
+    const sessionSelect = document.getElementById("session");
+    const sessionForm = document.getElementById("session-form");
+    const exercisesContainer = document.getElementById("exercises-container");
+    const submitBtn = document.getElementById("submit-btn");
+    const downloadBtn = document.getElementById("download-btn");
 
-sessionSelect.addEventListener("change", () => {
-    const exercises = predefinedSessions[sessionSelect.value];
-    createForm(exercises);
-});
-
-function createForm(exercises) {
-    exercisesContainer.innerHTML = '';
-
-    const savedDataRaw = localStorage.getItem('tempWorkout_' + sessionSelect.value);
-    const lastSessionRaw = localStorage.getItem('savedWorkouts');
-    let savedData = [];
-    let lastSession = [];
-
-    if (savedDataRaw) {
-        try { savedData = JSON.parse(savedDataRaw); } catch { savedData = []; }
+    // Remplir la liste des séances dans le <select>
+    function populateSessionSelect() {
+        sessionSelect.innerHTML = '';
+        Object.keys(predefinedSessions).forEach(sessionName => {
+            const option = document.createElement('option');
+            option.value = sessionName;
+            option.textContent = sessionName;
+            sessionSelect.appendChild(option);
+        });
     }
 
-    if (lastSessionRaw) {
-        try {
-            const all = JSON.parse(lastSessionRaw);
-            for (let i = all.length - 1; i >= 0; i--) {
-                if (all[i].session === sessionSelect.value) {
-                    lastSession = all[i].data;
-                    break;
-                }
-            }
-        } catch {
-            lastSession = [];
+    // Crée le formulaire avec exercices + séries
+    function createForm(exercises) {
+        exercisesContainer.innerHTML = '';
+
+        const savedDataRaw = localStorage.getItem('tempWorkout_' + sessionSelect.value);
+        const lastSessionRaw = localStorage.getItem('savedWorkouts');
+        let savedData = [];
+        let lastSession = [];
+
+        if (savedDataRaw) {
+            try { savedData = JSON.parse(savedDataRaw); } catch { savedData = []; }
         }
-    }
 
-    exercises.forEach((ex, i) => {
-        const divEx = document.createElement('div');
-        divEx.classList.add('exercise-block');
-        divEx.innerHTML = `<label><strong>${ex} :</strong></label>`;
+        if (lastSessionRaw) {
+            try {
+                const all = JSON.parse(lastSessionRaw);
+                for (let i = all.length - 1; i >= 0; i--) {
+                    if (all[i].session === sessionSelect.value) {
+                        lastSession = all[i].data;
+                        break;
+                    }
+                }
+            } catch {
+                lastSession = [];
+            }
+        }
 
-        const seriesContainer = document.createElement('div');
-        seriesContainer.classList.add('series-container');
+        exercises.forEach((ex, i) => {
+            const divEx = document.createElement('div');
+            divEx.classList.add('exercise-block');
+            divEx.innerHTML = `<label><strong>${ex} :</strong></label>`;
 
-        const seriesData = savedData[i] || [{ weight: '', reps: '' }];
-        const lastSeries = (lastSession[i] && lastSession[i].length > 0)
-            ? lastSession[i][lastSession[i].length - 1]
-            : null;
+            const seriesContainer = document.createElement('div');
+            seriesContainer.classList.add('series-container');
 
-        function addSerie(weight = '', reps = '') {
-            const serieDiv = document.createElement('div');
-            serieDiv.classList.add('serie');
+            const seriesData = savedData[i] || [{ weight: '', reps: '' }];
+            const lastSeries = (lastSession[i] && lastSession[i].length > 0)
+                ? lastSession[i][lastSession[i].length - 1]
+                : null;
 
-            const placeholderWeight = lastSeries ? `${lastSeries.weight} kg` : 'Poids (kg)';
-            const placeholderReps = lastSeries ? `${lastSeries.reps} reps` : 'Répétitions';
+            function addSerie(weight = '', reps = '') {
+                const serieDiv = document.createElement('div');
+                serieDiv.classList.add('serie');
 
-            // Champs inversés : Reps puis Poids
-            serieDiv.innerHTML = `
-          <input type="number" step="1" min="0" placeholder="${placeholderReps}" class="reps" value="${reps}" />
-          <input type="number" step="0.1" min="0" placeholder="${placeholderWeight}" class="weight" value="${weight}" />
-        `;
+                const placeholderReps = lastSeries ? `${lastSeries.reps} reps` : 'Répétitions';
+                const placeholderWeight = lastSeries ? `${lastSeries.weight} kg` : 'Poids (kg)';
 
-            const btnRemove = document.createElement('button');
-            btnRemove.type = 'button';
-            btnRemove.textContent = '−';
-            btnRemove.title = "Supprimer cette série";
-            btnRemove.style.marginLeft = '8px';
-            btnRemove.style.backgroundColor = '#dc3545';
-            btnRemove.style.fontWeight = 'bold';
-            btnRemove.style.color = 'white';
-            btnRemove.style.border = 'none';
-            btnRemove.style.borderRadius = '50%';
-            btnRemove.style.width = '28px';
-            btnRemove.style.height = '28px';
-            btnRemove.style.cursor = 'pointer';
+                // Champs inversés : reps puis poids
+                serieDiv.innerHTML = `
+            <input type="number" step="1" min="0" placeholder="${placeholderReps}" class="reps" value="${reps}" />
+            <input type="number" step="0.1" min="0" placeholder="${placeholderWeight}" class="weight" value="${weight}" />
+          `;
 
-            btnRemove.addEventListener('click', () => {
-                serieDiv.remove();
-                if (seriesContainer.children.length === 0) addSerie();
+                const btnRemove = document.createElement('button');
+                btnRemove.type = 'button';
+                btnRemove.textContent = '−';
+                btnRemove.title = "Supprimer cette série";
+                btnRemove.style.marginLeft = '8px';
+                btnRemove.style.backgroundColor = '#dc3545';
+                btnRemove.style.fontWeight = 'bold';
+                btnRemove.style.color = 'white';
+                btnRemove.style.border = 'none';
+                btnRemove.style.borderRadius = '50%';
+                btnRemove.style.width = '28px';
+                btnRemove.style.height = '28px';
+                btnRemove.style.cursor = 'pointer';
+
+                btnRemove.addEventListener('click', () => {
+                    serieDiv.remove();
+                    if (seriesContainer.children.length === 0) addSerie();
+                    saveTempData();
+                });
+
+                serieDiv.appendChild(btnRemove);
+                seriesContainer.appendChild(serieDiv);
+            }
+
+            seriesData.forEach(serie => addSerie(serie.weight, serie.reps));
+
+            const btnAdd = document.createElement('button');
+            btnAdd.type = 'button';
+            btnAdd.textContent = 'Ajouter une série';
+            btnAdd.addEventListener('click', () => addSerie());
+
+            const btnCopy = document.createElement('button');
+            btnCopy.type = 'button';
+            btnCopy.textContent = 'Copier';
+            btnCopy.style.marginLeft = '10px';
+            btnCopy.addEventListener('click', () => {
+                const allSeries = seriesContainer.querySelectorAll('.serie');
+                if (allSeries.length === 0) {
+                    addSerie();
+                    return;
+                }
+                const lastSerie = allSeries[allSeries.length - 1];
+                const lastWeight = lastSerie.querySelector('.weight').value;
+                const lastReps = lastSerie.querySelector('.reps').value;
+                addSerie(lastWeight, lastReps);
                 saveTempData();
             });
 
-            serieDiv.appendChild(btnRemove);
-            seriesContainer.appendChild(serieDiv);
-        }
+            divEx.appendChild(seriesContainer);
+            divEx.appendChild(btnAdd);
+            divEx.appendChild(btnCopy);
 
-        seriesData.forEach(serie => addSerie(serie.weight, serie.reps));
+            exercisesContainer.appendChild(divEx);
+        });
+    }
 
-        const btnAdd = document.createElement('button');
-        btnAdd.type = 'button';
-        btnAdd.textContent = 'Ajouter une série';
-        btnAdd.addEventListener('click', () => addSerie());
-
-        const btnCopy = document.createElement('button');
-        btnCopy.type = 'button';
-        btnCopy.textContent = 'Copier';
-        btnCopy.style.marginLeft = '10px';
-        btnCopy.addEventListener('click', () => {
-            const allSeries = seriesContainer.querySelectorAll('.serie');
-            if (allSeries.length === 0) {
-                addSerie();
-                return;
-            }
-            const lastSerie = allSeries[allSeries.length - 1];
-            const lastWeight = lastSerie.querySelector('.weight').value;
-            const lastReps = lastSerie.querySelector('.reps').value;
-            addSerie(lastWeight, lastReps);
-            saveTempData();
+    function saveTempData() {
+        const exercises = predefinedSessions[sessionSelect.value];
+        const tempData = exercises.map((ex, i) => {
+            const exDiv = exercisesContainer.children[i];
+            const series = [...exDiv.querySelectorAll('.serie')].map(serieDiv => {
+                const weight = serieDiv.querySelector('.weight').value || '';
+                const reps = serieDiv.querySelector('.reps').value || '';
+                return { weight, reps };
+            });
+            return series.length > 0 ? series : [{ weight: '', reps: '' }];
         });
 
-        divEx.appendChild(seriesContainer);
-        divEx.appendChild(btnAdd);
-        divEx.appendChild(btnCopy);
+        localStorage.setItem('tempWorkout_' + sessionSelect.value, JSON.stringify(tempData));
+    }
 
-        exercisesContainer.appendChild(divEx);
-    });
-}
+    sessionForm.addEventListener('input', saveTempData);
 
-function saveTempData() {
-    const exercises = predefinedSessions[sessionSelect.value];
-    const tempData = exercises.map((ex, i) => {
-        const exDiv = exercisesContainer.children[i];
-        const series = [...exDiv.querySelectorAll('.serie')].map(serieDiv => {
-            const weight = serieDiv.querySelector('.weight').value || '';
-            const reps = serieDiv.querySelector('.reps').value || '';
-            return { weight, reps };
+    submitBtn.addEventListener('click', () => {
+        const exercises = predefinedSessions[sessionSelect.value];
+        const workoutData = exercises.map((ex, i) => {
+            const exDiv = exercisesContainer.children[i];
+            return [...exDiv.querySelectorAll('.serie')].map(serieDiv => {
+                const weight = serieDiv.querySelector('.weight').value || '';
+                const reps = serieDiv.querySelector('.reps').value || '';
+                return { weight, reps };
+            });
         });
-        return series.length > 0 ? series : [{ weight: '', reps: '' }];
-    });
 
-    localStorage.setItem('tempWorkout_' + sessionSelect.value, JSON.stringify(tempData));
-}
-
-sessionForm.addEventListener('input', saveTempData);
-
-submitBtn.addEventListener('click', () => {
-    const exercises = predefinedSessions[sessionSelect.value];
-    const workoutData = exercises.map((ex, i) => {
-        const exDiv = exercisesContainer.children[i];
-        return [...exDiv.querySelectorAll('.serie')].map(serieDiv => {
-            const weight = serieDiv.querySelector('.weight').value || '';
-            const reps = serieDiv.querySelector('.reps').value || '';
-            return { weight, reps };
+        const allData = JSON.parse(localStorage.getItem('savedWorkouts') || '[]');
+        allData.push({
+            date: new Date().toISOString(),
+            session: sessionSelect.value,
+            data: workoutData
         });
+        localStorage.setItem('savedWorkouts', JSON.stringify(allData));
+        localStorage.removeItem('tempWorkout_' + sessionSelect.value);
+        alert("Séance enregistrée !");
     });
 
-    const allData = JSON.parse(localStorage.getItem('savedWorkouts') || '[]');
-    allData.push({
-        date: new Date().toISOString(),
-        session: sessionSelect.value,
-        data: workoutData
+    downloadBtn.addEventListener('click', () => {
+        const allData = localStorage.getItem('savedWorkouts');
+        const blob = new Blob([allData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", url);
+        downloadAnchorNode.setAttribute("download", "workouts.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
     });
-    localStorage.setItem('savedWorkouts', JSON.stringify(allData));
-    localStorage.removeItem('tempWorkout_' + sessionSelect.value);
-    alert("Séance enregistrée !");
-});
 
-downloadBtn.addEventListener('click', () => {
-    const allData = localStorage.getItem('savedWorkouts');
-    const blob = new Blob([allData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", url);
-    downloadAnchorNode.setAttribute("download", "workouts.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    // Init page
+    populateSessionSelect();
+    createForm(predefinedSessions[sessionSelect.value]);
 });
