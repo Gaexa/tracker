@@ -10,6 +10,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const exercisesContainer = document.getElementById("exercises-container");
     const submitBtn = document.getElementById("submit-btn");
     const downloadBtn = document.getElementById("download-btn");
+    function displayHistory() {
+        const historyDiv = document.getElementById('history');
+        const allData = JSON.parse(localStorage.getItem('savedWorkouts') || '[]');
+        historyDiv.innerHTML = '';
+
+        allData.forEach(entry => {
+            const date = new Date(entry.date);
+            const dateStr = date.toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' });
+
+            const sessionTitle = document.createElement('h3');
+            sessionTitle.textContent = `Séance : ${entry.session} - Date : ${dateStr}`;
+            historyDiv.appendChild(sessionTitle);
+
+            const exercises = predefinedSessions[entry.session] || [];
+
+            entry.data.forEach((seriesList, exIndex) => {
+                const exName = exercises[exIndex] || `Exercice ${exIndex + 1}`;
+                let seriesText = seriesList
+                    .filter(serie => serie.reps && serie.weight) // filtre séries vides
+                    .map(serie => `(${serie.reps} reps - ${serie.weight} kg)`)
+                    .join(', ');
+
+                if (!seriesText) seriesText = 'Aucune série enregistrée';
+
+                const p = document.createElement('p');
+                p.textContent = `${exName} : ${seriesText}`;
+                historyDiv.appendChild(p);
+            });
+        });
+    }
+
 
     // Remplir la liste des séances dans le <select>
     function populateSessionSelect() {
@@ -62,19 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? lastSession[i][lastSession[i].length - 1]
                 : null;
 
-            function addSerie(weight = '', reps = '') {
+            function addSerie(weight = '', reps = '', serieIndex = 0) {
                 const serieDiv = document.createElement('div');
                 serieDiv.classList.add('serie');
 
-                const placeholderReps = lastSeries ? `${lastSeries.reps} reps` : 'Répétitions';
-                const placeholderWeight = lastSeries ? `${lastSeries.weight} kg` : 'Poids (kg)';
+                // Récupérer les données de la même série dans la dernière séance (si existante)
+                const lastSerieData = (lastSession[i] && lastSession[i][serieIndex]) ? lastSession[i][serieIndex] : null;
 
-                // Champs inversés : reps puis poids
+                // Placeholders avec valeurs précédentes ou par défaut
+                const placeholderReps = lastSerieData ? `${lastSerieData.reps} reps` : 'Répétitions';
+                const placeholderWeight = lastSerieData ? `${lastSerieData.weight} kg` : 'Poids (kg)';
+
+                // Champs avec reps puis poids (ordre inversé)
                 serieDiv.innerHTML = `
-            <input type="number" step="1" min="0" placeholder="${placeholderReps}" class="reps" value="${reps}" />
-            <input type="number" step="0.1" min="0" placeholder="${placeholderWeight}" class="weight" value="${weight}" />
-          `;
+                      <input type="number" step="1" min="0" placeholder="${placeholderReps}" class="reps" value="${reps}" />
+                      <input type="number" step="0.1" min="0" placeholder="${placeholderWeight}" class="weight" value="${weight}" />
+                    `;
 
+                // Bouton supprimer série
                 const btnRemove = document.createElement('button');
                 btnRemove.type = 'button';
                 btnRemove.textContent = '−';
@@ -99,7 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 seriesContainer.appendChild(serieDiv);
             }
 
-            seriesData.forEach(serie => addSerie(serie.weight, serie.reps));
+
+
+            seriesData.forEach((serie, serieIndex) => addSerie(serie.weight, serie.reps, serieIndex));
 
             const btnAdd = document.createElement('button');
             btnAdd.type = 'button';
@@ -130,6 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
             exercisesContainer.appendChild(divEx);
         });
     }
+    displayHistory();
+
 
     function saveTempData() {
         const exercises = predefinedSessions[sessionSelect.value];
@@ -152,12 +192,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const exercises = predefinedSessions[sessionSelect.value];
         const workoutData = exercises.map((ex, i) => {
             const exDiv = exercisesContainer.children[i];
-            return [...exDiv.querySelectorAll('.serie')].map(serieDiv => {
-                const weight = serieDiv.querySelector('.weight').value || '';
-                const reps = serieDiv.querySelector('.reps').value || '';
-                return { weight, reps };
-            });
+            return [...exDiv.querySelectorAll('.serie')]
+                .map(serieDiv => {
+                    const weight = serieDiv.querySelector('.weight').value.trim();
+                    const reps = serieDiv.querySelector('.reps').value.trim();
+                    return { weight, reps };
+                })
+                .filter(serie => {
+                    // On garde seulement les séries avec reps > 0 ET weight > 0
+                    return serie.reps !== '' && serie.weight !== '' && Number(serie.reps) > 0 && Number(serie.weight) > 0;
+                });
         });
+
 
         const allData = JSON.parse(localStorage.getItem('savedWorkouts') || '[]');
         allData.push({
@@ -168,6 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('savedWorkouts', JSON.stringify(allData));
         localStorage.removeItem('tempWorkout_' + sessionSelect.value);
         alert("Séance enregistrée !");
+        displayHistory();
+
     });
 
     downloadBtn.addEventListener('click', () => {
